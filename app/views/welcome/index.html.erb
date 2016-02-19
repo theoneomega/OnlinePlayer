@@ -1,0 +1,43 @@
+<div class="clear"></div>
+<section id="sidebar">
+    <h2>HTML5 Audio</h2>
+    <section id="audio">
+        No song is currently playing.
+    </section>
+</section>
+<section id="main">
+<h2>Songs list</h2>
+<table>
+<tr>
+	<th>Title</th>
+</tr>
+<tbody>
+	<% @songs.each do |f| %>
+	<tr>
+	<td>
+		<%= link_to "#{f.gsub("#{Rails.root}/public/","")}", "#{f.gsub("#{Rails.root}/public/","")}", :class=> "html5",:onclick => "play()" %>
+		</td>
+		</tr>
+	<% end %>
+</tbody>
+</table>
+</section>
+<div class="clear"></div>
+
+<script>
+	$(function() {
+    var audioSection = $('section#audio');
+    $('a.html5').click(function() {
+ 
+        var audio = $('<audio>', {
+             controls : 'controls',
+             autoPlay : 'autoplay',
+        });
+ 
+        var url = $(this).attr('href');
+        $('<source>').attr('src', url).appendTo(audio);
+        audioSection.html(audio);
+        return false;
+    });
+});
+</script>
