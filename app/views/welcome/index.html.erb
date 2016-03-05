@@ -1,43 +1,103 @@
-<div class="clear"></div>
-<section id="sidebar">
-    <h2>HTML5 Audio</h2>
-    <section id="audio">
-        No song is currently playing.
-    </section>
-</section>
-<section id="main">
-<h2>Songs list</h2>
-<table>
-<tr>
-	<th>Title</th>
-</tr>
-<tbody>
-	<% @songs.each do |f| %>
-	<tr>
-	<td>
-		<%= link_to "#{f.gsub("#{Rails.root}/public/","")}", "#{f.gsub("#{Rails.root}/public/","")}", :class=> "html5",:onclick => "play()" %>
-		</td>
-		</tr>
-	<% end %>
-</tbody>
-</table>
-</section>
-<div class="clear"></div>
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 fixed">
+      <h2 class="text-center" id="nowplaying">Reproduciendo:</h2>
+      <div id="audio" class="text-center">
+        No se esta reproduciendo nada actualmente.
+      </div>
+    </div>
+
+  </div>
+  <div class="row">
+    <div class="col-md-12 scrollit">
+      <h2>Lista de audios</h2>
+      <table class="table table-bordered table-responsive table-hover table-striped table-condensed" style="height: 80px">
+        <tr>
+          <th>Titulo</th>
+          <th>Fecha</th>
+          <th>Total reproducciones</th>
+          <th>Descargar</th>
+          <th>Total Descargas</th>
+        </tr>
+        <tbody>
+        <% @songs.order(:recorded_date => :desc).each do |f| %>
+            <tr>
+              <td>
+                <%= link_to "#{f.name}","/#{f.path+"/"+f.name}.mp3", :class=> "html5", :data => {:id => f.id} %>
+                <%if f.recorded_date> (Time.now - 7.days) %>
+                    <span class="badge">Nuevo!</span>
+                <% end %>
+              </td>
+              <td>
+                <%= f.recorded_date.strftime("%d %B %Y") %>
+              </td>
+              <td id="<%= f.id %>">
+                <%= f.played %>
+              </td>
+              <td>
+                <%= link_to "Descargar", download_audio_path(f.id), :class=>"download", data: {song_id: f.id} %>
+              </td>
+              <td id="downloaded_<%= f.id %>">
+                <%= f.downloaded_times %>
+              </td>
+            </tr>
+        <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 
 <script>
-	$(function() {
-    var audioSection = $('section#audio');
-    $('a.html5').click(function() {
- 
-        var audio = $('<audio>', {
-             controls : 'controls',
-             autoPlay : 'autoplay',
-        });
- 
-        var url = $(this).attr('href');
-        $('<source>').attr('src', url).appendTo(audio);
-        audioSection.html(audio);
-        return false;
+
+  $(".html5").each(function(){
+    $(this).on("click",function(){
+      $.ajax({
+        url: "/welcome/play?id=" + $(this).attr("data-id"),
+        dataType: 'json',
+        error: function(xhr, status, error) {
+          alert(status);
+        },
+        success: function(e){
+          $("#"+ e.id).text(e.played);
+        }
+      });
+      $("#nowplaying").text("Reproduciendo:  "+$(this).text());
     });
-});
+  });
+  $(".download").each(function(){
+    $(this).on("click",function(){
+      $.ajax({
+        url: "/welcome/download?id=" + $(this).attr("data-song-id"),
+        dataType: 'json',
+        error: function(xhr, status, error) {
+          alert(status);
+        },
+        success: function(e){
+          $("#downloaded_"+ e.id).text(e.downloaded_times);
+        }
+      });
+    });
+  });
+
+
+
+  $(function() {
+
+    var audioSection = $('div#audio');
+    $('a.html5').click(function() {
+      var audio = $('<audio>', {
+        controls : 'controls',
+        autoPlay : 'autoplay',
+
+        // audioVolume: 'horizontal',
+      });
+
+      var url = $(this).attr('href');
+      $('<source>').attr('src', url).appendTo(audio);
+      audioSection.html(audio);
+
+      return false;
+    });
+  });
 </script>
