@@ -1,6 +1,10 @@
 Rails.application.routes.draw do
 
- 
+
+  resources :songs
+
+  get 'test/index'
+
   get 'welcome/index'
 
   # The priority is based upon order of creation: first created -> highest priority.
@@ -8,10 +12,11 @@ Rails.application.routes.draw do
 
   # You can have the root of your site routed with "root"
   root 'welcome#index'
-
+  #match "welcome/play"=> "welcome#play", as: :play_song, via: [:post]
   # Example of regular route:
-  #   get 'products/:id' => 'catalog#view'
-
+  get 'welcome/play' => 'welcome#play', as: :play_song
+  get 'welcome/download' => 'welcome#download', as: :download
+  get 'welcome/audio_download/:id' => 'welcome#audio_download', as: :download_audio
   # Example of named route that can be invoked with purchase_url(id: product.id)
   #   get 'products/:id/purchase' => 'catalog#purchase', as: :purchase
 

@@ -1,10 +1,10 @@
 <div class="container">
   <div class="row">
     <div class="col-md-12 fixed">
-      <h2 class="text-center" id="nowplaying">Reproduciendo:</h2>
-      <div id="audio" class="text-center">
-        No se esta reproduciendo nada actualmente.
-      </div>
+      <!--<h2 class="text-center" id="nowplaying">Reproduciendo:</h2>-->
+      <!--<div id="audio" class="text-center">-->
+        <!--No se esta reproduciendo nada actualmente.-->
+      <!--</div>-->
     </div>
 
   </div>
@@ -22,7 +22,7 @@
         <tbody>
         <% @songs.order(:recorded_date => :desc).each do |f| %>
             <tr>
-              <td>
+              <td><i class="fa fa-music text-primary"></i>
                 <%= link_to "#{f.name}","/#{f.path+"/"+f.name}.mp3", :class=> "html5", :data => {:id => f.id} %>
                 <%if f.recorded_date> (Time.now - 7.days) %>
                     <span class="badge">Nuevo!</span>
@@ -35,7 +35,7 @@
                 <%= f.played %>
               </td>
               <td>
-                <%= link_to "Descargar", download_audio_path(f.id), :class=>"download", data: {song_id: f.id} %>
+                <%= link_to "Descargar", download_audio_path(f.id), :class=>"download",'data-no-turbolink'=> true, data: { song_id: f.id} %>
               </td>
               <td id="downloaded_<%= f.id %>">
                 <%= f.downloaded_times %>
@@ -56,7 +56,9 @@
         url: "/welcome/play?id=" + $(this).attr("data-id"),
         dataType: 'json',
         error: function(xhr, status, error) {
-          alert(status);
+          console.log(xhr);
+          console.log(status);
+          console.log(error);
         },
         success: function(e){
           $("#"+ e.id).text(e.played);
@@ -67,16 +69,8 @@
   });
   $(".download").each(function(){
     $(this).on("click",function(){
-      $.ajax({
-        url: "/welcome/download?id=" + $(this).attr("data-song-id"),
-        dataType: 'json',
-        error: function(xhr, status, error) {
-          alert(status);
-        },
-        success: function(e){
-          $("#downloaded_"+ e.id).text(e.downloaded_times);
-        }
-      });
+      console.log($(this).attr("data-song-id"));
+      $("#downloaded_"+$(this).attr("data-song-id")).text(parseInt($("#downloaded_"+$(this).attr("data-song-id")).text())+1)
     });
   });
 
@@ -84,7 +78,7 @@
 
   $(function() {
 
-    var audioSection = $('div#audio');
+    var audioSection = $('#audio');
     $('a.html5').click(function() {
       var audio = $('<audio>', {
         controls : 'controls',
