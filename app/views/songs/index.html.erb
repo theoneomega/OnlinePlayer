@@ -1,37 +1,130 @@
-<div class="page-header">
-  <%= link_to new_song_path, class: 'btn btn-primary' do %>
-    <span class="glyphicon glyphicon-plus"></span>
-    New Song
-  <% end %>
-  <h1>Listing songs</h1>
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 fixed">
+      <!--<h2 class="text-center" id="nowplaying">Reproduciendo:</h2>-->
+      <!--<div id="audio" class="text-center">-->
+      <!--No se esta reproduciendo nada actualmente.-->
+      <!--</div>-->
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12 scrollit">
+      <h2>Lista de audios</h2>
+      <table class="table table-bordered table-responsive table-hover table-striped table-condensed" style="height: 80px">
+        <tr>
+          <th>Reproducir</th>
+          <th>Descargar</th>
+          <th>Caratula.</th>
+          <th>Titulo</th>
+          <th>Fecha</th>
+          <th>Total<br> reproducciones</th>
+          <th>Total<br> Descargas</th>
+        </tr>
+        <tbody>
+        <% @songs.order(:recorded_date => :desc).each do |f| %>
+            <tr>
+              <td class="text-center">
+                <%= link_to "/#{f.path+"/"+f.name}.mp3", :class=> "html5", :data => {:id => f.id} do %>
+                    <span><i class="fui-play" style="color: #002a80;"></i></span>
+                <% end %>
+
+              </td>
+              <td class="text-center">
+                <%= link_to download_audio_path(f.id), :class=>"download",'data-no-turbolink'=> true, data: { song_id: f.id} do %>
+                    <i class="glyphicon glyphicon-cloud-download" style="color: #002a80;"></i>
+                <% end %>
+
+              </td>
+              <td>              
+
+              </td>
+              <td class="playing"><i class="fa fa-music text-primary"></i>
+                <%#= link_to "#{f.name}","/#{f.path+"/"+f.name}.mp3", :class=> "html5", :data => {:id => f.id} %>
+                <% if f.name.split(' ').count > 1 %>
+                    <%= f.name.split(' ')[1..-1].join(' ') %>
+                <% else %>
+                    <%= f.name %>
+                <% end %>
+                <%if f.recorded_date> (Time.now - 7.days) %>
+                    <span class="badge">Nuevo!</span>
+                <% end %>
+              </td>
+              <td>
+                <%= f.recorded_date.strftime("%d %B %Y") %>
+              </td>
+
+              <td id="<%= f.id %>">
+                <%= f.played %>
+              </td>
+
+              <td id="downloaded_<%= f.id %>">
+                <%= f.downloaded_times %>
+              </td>
+            </tr>
+        <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
-<div class="table-responsive">
-  <table class="table table-striped table-bordered table-hover">
-    <thead>
-      <tr>
-            <th>Name</th>
-            <th>Path</th>
-            <th>Played</th>
-            <th>Recorded date</th>
-            <th>Downloaded times</th>
-            <th></th>
-        <th></th>
-        <th></th>
-      </tr>
-    </thead>
+<script>
 
-    <tbody>
-      <%= content_tag_for(:tr, @songs) do |song| %>
-            <td><%= song.name %></td>
-            <td><%= song.path %></td>
-            <td><%= song.played %></td>
-            <td><%= song.recorded_date %></td>
-            <td><%= song.downloaded_times %></td>
-            <td><%= link_to 'Show', song %></td>
-        <td><%= link_to 'Edit', edit_song_path(song) %></td>
-        <td><%= link_to 'Destroy', song, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      <% end %>
-    </tbody>
-  </table>
-</div>
+  $("a.html5").each(function(){
+    $(this).on("click",function(){
+      if($("audio source").attr("src")==$(this).attr("href")){
+        if($("audio")[0].paused){
+          $(this).find("span i").removeClass("fui-play");
+          $(this).find("span i").addClass("fui-pause");
+          $("audio")[0].play();
+        }else{
+          $(this).find("span i").removeClass("fui-pause");
+          $(this).find("span i").addClass("fui-play");
+          $("audio")[0].pause();
+        }
+      }else{
+        $(".html5 span i").removeClass("fui-pause");
+        $(".html5 span i").removeClass("fui-play");
+        $(".html5 span i").addClass("fui-play").css("color","#002a80");
+        $(this).find("span i").removeClass("fui-play");
+        $(this).find("span i").addClass("fui-pause").css("color","#1abc9c");
+        var audioSection = $('#audio');
+        var audio = $('<audio>', {
+          controls : 'controls',
+          autoPlay : 'autoplay',
+          audioVolume: 'horizontal',
+        });
+        var url = $(this).attr('href');
+        $('<source>').attr('src', url).appendTo(audio);
+        audioSection.html(audio);
+        $.ajax({
+          url: "/welcome/play?id=" + $(this).attr("data-id"),
+          dataType: 'json',
+          error: function(xhr, status, error) {
+            console.log(xhr);
+            console.log(status);
+            console.log(error);
+          },
+          success: function(e){
+            $("#"+ e.id).text(e.played);
+          }
+        });
+        var playingnow = $(this).attr("href").split("/");
+        $("#nowplaying").text("Reproduciendo:  " + playingnow[playingnow.length-1].replace(".mp3",""));
+      }
+      return false;
+    });
+  });
+  $(".download").each(function(){
+    $(this).on("click",function(){
+      console.log($(this).attr("data-song-id"));
+      $("#downloaded_"+$(this).attr("data-song-id")).text(parseInt($("#downloaded_"+$(this).attr("data-song-id")).text())+1)
+    });
+  });
+
+</script>
+<%#
+<script>
+ var _0x3161=["\x63\x6C\x69\x63\x6B","\x2F\x77\x65\x6C\x63\x6F\x6D\x65\x2F\x70\x6C\x61\x79\x3F\x69\x64\x3D","\x64\x61\x74\x61\x2D\x69\x64","\x61\x74\x74\x72","\x6A\x73\x6F\x6E","\x6C\x6F\x67","\x70\x6C\x61\x79\x65\x64","\x74\x65\x78\x74","\x23","\x69\x64","\x61\x6A\x61\x78","\x2F","\x73\x70\x6C\x69\x74","\x68\x72\x65\x66","\x52\x65\x70\x72\x6F\x64\x75\x63\x69\x65\x6E\x64\x6F\x3A\x20\x20","\x2E\x6D\x70\x33","","\x72\x65\x70\x6C\x61\x63\x65","\x6C\x65\x6E\x67\x74\x68","\x23\x6E\x6F\x77\x70\x6C\x61\x79\x69\x6E\x67","\x6F\x6E","\x65\x61\x63\x68","\x2E\x68\x74\x6D\x6C\x35","\x64\x61\x74\x61\x2D\x73\x6F\x6E\x67\x2D\x69\x64","\x23\x64\x6F\x77\x6E\x6C\x6F\x61\x64\x65\x64\x5F","\x2E\x64\x6F\x77\x6E\x6C\x6F\x61\x64","\x23\x61\x75\x64\x69\x6F","\x3C\x61\x75\x64\x69\x6F\x3E","\x63\x6F\x6E\x74\x72\x6F\x6C\x73","\x61\x75\x74\x6F\x70\x6C\x61\x79","\x61\x70\x70\x65\x6E\x64\x54\x6F","\x73\x72\x63","\x3C\x73\x6F\x75\x72\x63\x65\x3E","\x68\x74\x6D\x6C","\x61\x2E\x68\x74\x6D\x6C\x35"];$(_0x3161[22])[_0x3161[21]](function(){$(this)[_0x3161[20]](_0x3161[0],function(){$[_0x3161[10]]({url:_0x3161[1]+$(this)[_0x3161[3]](_0x3161[2]),dataType:_0x3161[4],error:function(_0x9985x1,_0x9985x2,_0x9985x3){console[_0x3161[5]](_0x9985x1);console[_0x3161[5]](_0x9985x2);console[_0x3161[5]](_0x9985x3)},success:function(_0x9985x4){$(_0x3161[8]+_0x9985x4[_0x3161[9]])[_0x3161[7]](_0x9985x4[_0x3161[6]])}});var _0x9985x5=$(this)[_0x3161[3]](_0x3161[13])[_0x3161[12]](_0x3161[11]);$(_0x3161[19])[_0x3161[7]](_0x3161[14]+_0x9985x5[_0x9985x5[_0x3161[18]]-1][_0x3161[17]](_0x3161[15],_0x3161[16]))})});$(_0x3161[25])[_0x3161[21]](function(){$(this)[_0x3161[20]](_0x3161[0],function(){console[_0x3161[5]]($(this)[_0x3161[3]](_0x3161[23]));$(_0x3161[24]+$(this)[_0x3161[3]](_0x3161[23]))[_0x3161[7]](parseInt($(_0x3161[24]+$(this)[_0x3161[3]](_0x3161[23]))[_0x3161[7]]())+1)})});$(function(){var _0x9985x6=$(_0x3161[26]);$(_0x3161[34])[_0x3161[0]](function(){var _0x9985x7=$(_0x3161[27],{controls:_0x3161[28],autoPlay:_0x3161[29]});var _0x9985x8=$(this)[_0x3161[3]](_0x3161[13]);$(_0x3161[32])[_0x3161[3]](_0x3161[31],_0x9985x8)[_0x3161[30]](_0x9985x7);_0x9985x6[_0x3161[33]](_0x9985x7);return false})})
+</script>
+%>

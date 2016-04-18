@@ -1,6 +1,10 @@
 Rails.application.routes.draw do
 
 
+  resources :uploaded_files
+
+  devise_for :users
+
   resources :songs
 
   get 'test/index'
