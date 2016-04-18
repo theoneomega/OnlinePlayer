@@ -28,4 +28,5 @@ class WelcomeController < ApplicationController
   def song_params
     params.require(:song).permit(:name, :path, :played, :recorded_date, :downloaded_times)
   end
+
 end

@@ -1,7 +1,5 @@
 Rails.application.routes.draw do
-
-
-  resources :uploaded_files
+resources :uploaded_files
 
   devise_for :users
 

@@ -29,7 +29,9 @@ Rails.application.configure do
   # config.assets.css_compressor = :sass
 
   # Do not fallback to assets pipeline if a precompiled asset is missed.
+
   config.assets.compile = true
+
 
   # Asset digests allow you to set far-future HTTP expiration dates on all assets,
   # yet still be able to expire them through the digest params.
@@ -59,7 +61,11 @@ Rails.application.configure do
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.action_controller.asset_host = 'http://assets.example.com'
+<<<<<<< HEAD
   config.action_mailer.default_url_options = { host: 'www.alabanzafdv.com' }
+=======
+
+>>>>>>> 59d5c358ee088b34b70ec5dfb8cbbe8e14f53c56
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false
@@ -76,6 +82,7 @@ Rails.application.configure do
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
+<<<<<<< HEAD
   config.action_mailer.default_url_options = { :host => 'www.alabanzafdv.com' }
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
@@ -88,4 +95,6 @@ Rails.application.configure do
 
   }
 
+=======
+>>>>>>> 59d5c358ee088b34b70ec5dfb8cbbe8e14f53c56
 end

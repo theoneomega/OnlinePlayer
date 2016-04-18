@@ -12,6 +12,7 @@
  *
  *= require_tree .
  *= require_self
+
  *= require bootstrap.min
  *= require flat-ui.min
  */
@@ -27,4 +28,44 @@ audio{
     top:0px;
     /*width:100%;*/
     height:70px;
+}
+#container {
+  width: 75%;
+  margin: 0 auto;
+  background-color: #FFF;
+  padding: 20px 40px;
+  border: solid 1px black;
+  margin-top: 20px;
+}
+body {
+  background-color: #4B7399;
+  font-family: Verdana, Helvetica, Arial;
+  font-size: 14px;
+}
+.clear {
+  clear: both;
+  height: 0;
+  overflow: hidden;
+}
+#sidebar {
+    width: 30%;
+    float: left;
+}
+#main {
+    width: 70%;
+    float: left;
+}
+a:hover{
+  background-color: none;
+}
+a, a:visited {
+    color: #00f;
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+td {
+    padding: 5px;
+
 }
