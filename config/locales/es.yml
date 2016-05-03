@@ -1,4 +1,6 @@
 es:
+  songs: Grabaciones
+  uploadedfiles: Lista de grabaciones
   errors:
     messages:
       expired: "ha expirado, por favor pida uno nuevo"

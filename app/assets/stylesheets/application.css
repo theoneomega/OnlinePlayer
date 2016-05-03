@@ -23,49 +23,46 @@ audio{
 .gi-3x{font-size: 3em;}
 .gi-4x{font-size: 4em;}
 .gi-5x{font-size: 5em;}
-#logo{
-    position:fixed;
-    top:0px;
-    /*width:100%;*/
-    height:70px;
-}
-#container {
-  width: 75%;
-  margin: 0 auto;
-  background-color: #FFF;
-  padding: 20px 40px;
-  border: solid 1px black;
-  margin-top: 20px;
-}
-body {
-  background-color: #4B7399;
-  font-family: Verdana, Helvetica, Arial;
-  font-size: 14px;
-}
-.clear {
-  clear: both;
-  height: 0;
-  overflow: hidden;
-}
-#sidebar {
-    width: 30%;
-    float: left;
-}
-#main {
-    width: 70%;
-    float: left;
-}
-a:hover{
-  background-color: none;
-}
-a, a:visited {
-    color: #00f;
-    text-decoration: none;
-}
-a:hover {
-    text-decoration: underline;
-}
-td {
-    padding: 5px;
 
+.table-wrapper{
+	overflow-y: auto;
+	overflow-x:hidden;
+	margin-bottom: 20px;
+}
+table{
+	background: rgba(255,255,255,0.5) !important;
+}
+caption{
+	background-color:#2980B9;
+	color: #fff !important;
+	font-weight: bolder;
+	padding-top: 0px !important;
+	padding-bottom: 0px !important;
+}
+body{
+	background: url("/assets/seccion_Grabaciones.jpg") no-repeat center;
+	background-size: cover;
+}
+img.logo-img {
+    top: 10px;
+    position: absolute;
+    z-index: 100099;
+    left: 15px;
+}
+.glyphicon{
+	color: #48C9B0;
+}
+.center-something{
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	vertical-align: middle;
+}
+@media screen and (max-width: 650px){
+	.logo-img{
+		width: 50px;
+		height: 50px;
+		top: 5px !important;
+		left: 5px !important;
+	}
 }

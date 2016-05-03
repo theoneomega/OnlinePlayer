@@ -1,74 +1,219 @@
 <div class="container">
-  <div class="row">
-    <div class="col-md-12 fixed">
-      <!--<h2 class="text-center" id="nowplaying">Reproduciendo:</h2>-->
-      <!--<div id="audio" class="text-center">-->
-      <!--No se esta reproduciendo nada actualmente.-->
-      <!--</div>-->
+  <div class="row col-md-12">
+    <div class="col-md-12">
+      <div class="table-wrapper">
+        <table class="table table-sm table-bordered table-hover  table-condensed">
+        <caption class="text-center header">Servicios Completos</caption>
+        <thead>
+          <tr class="header">
+          <th></th>
+            <% if current_user.try(:admin) %>
+              <th>Caratula.</th>
+              <th> Tipo </th>
+            <%end%>
+            <th>Titulo</th>
+            <th>Fecha</th>
+            <% if current_user.try(:admin) %>
+              <th>Played</th>
+              <th>Descargas</th>
+            <%end%>
+            <th></th>
+          </tr>
+          </thead>
+          <tbody>
+          <% @songs.where(:audio_type => "full").order(:recorded_date => :desc).each do |f| %>
+              <tr>
+              <td> <img src="/assets/<%= f.attachment %>" width="50"></td>
+                <% if current_user.try(:admin) %>
+                <td>
+
+                </td>
+                <td>
+                  <%= f.audio_type %>
+                </td>
+                <%end%>
+                <td class="playing filterable-cell"><i class="glyphicon glyphicon-music text-primary" style="color:#48C9B0"></i>                  
+                  <% if f.name.gsub('_'," ").split(' ').count > 1 %>
+                      <%= f.name.gsub("_"," ").split(' ')[1..-1].join(' ') %>
+                  <% else %>
+                      <%= f.name.gsub("_"," ") %>
+                  <% end %>
+                  <%if f.recorded_date> (Time.now - 7.days) %>
+                      <span class="badge">Nuevo!</span>
+                  <% end %>
+                  <br>
+                    <small>
+                      <i class="glyphicon glyphicon-time"></i> <%= f.duration %>  
+                    </small>
+                </td>
+                <td>
+                  <%= f.recorded_date.strftime("%d %B %Y") %>
+                </td>
+                <% if current_user.try(:admin) %>
+                <td id="<%= f.id %>">
+                  <%= f.played %>
+                </td>
+
+                <td id="downloaded_<%= f.id %>">
+                  <%= f.downloaded_times %>
+                </td>
+                <%end%>
+                <td class="text-center">
+                  <%= link_to "/#{f.path+"/"+f.name}.mp3", :class=> "html5", :data => {:id => f.id} do %>
+                      <span><i class="fui-play" style="color: #C0392B;"></i></span>
+                  <% end %>
+                  <%= link_to download_audio_path(f.id), :class=>"download",'data-no-turbolink'=> true, data: { song_id: f.id} do %>
+                      <i class="glyphicon glyphicon-cloud-download" style="color: #002a80;"></i>
+                  <% end %>
+              </td>
+              </tr>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
-  <div class="row">
-    <div class="col-md-12 scrollit">
-      <h2>Lista de audios</h2>
-      <table class="table table-bordered table-responsive table-hover table-striped table-condensed" style="height: 80px">
-        <tr>
-          <th>Reproducir</th>
-          <th>Descargar</th>
-          <th>Caratula.</th>
-          <th>Titulo</th>
-          <th>Fecha</th>
-          <th>Total<br> reproducciones</th>
-          <th>Total<br> Descargas</th>
-        </tr>
-        <tbody>
-        <% @songs.order(:recorded_date => :desc).each do |f| %>
-            <tr>
-              <td class="text-center">
-                <%= link_to "/#{f.path+"/"+f.name}.mp3", :class=> "html5", :data => {:id => f.id} do %>
-                    <span><i class="fui-play" style="color: #002a80;"></i></span>
-                <% end %>
+<div class="row col-md-12">
+  <div class="col-md-6">
+  <div class="table-wrapper">
+    <table class="table table-sm table-bordered table-hover  table-condensed">
+            <caption class="text-center ">Alabanza</caption>
+            <thead>
+             <tr>
+              <th></th>                
+                <th>Titulo</th>                
+                <% if current_user.try(:admin) %>
+                  <th>Played</th>
+                  <th>Descargas</th>
+                <%end%>
+                <th></th>
+              </tr>
+              </thead>
+              <tbody>
+              <% @songs.where(:audio_type => "alabanza").order(:recorded_date => :desc).each do |f| %>
+                  <tr>
+                  <td>
+                    <img src="/assets/<%= f.attachment %>" width="50">                    
+                  </td>
+                  <td>                    
+                      <i class="glyphicon glyphicon-music text-primary" style="color:#48C9B0"></i>                  
+                      <% if f.name.gsub("_"," ").split(' ').count > 1 %>
+                          <%= f.name.gsub("_"," ").split(' ')[1..-1].join(' ') %>
+                      <% else %>
+                          <%= f.name.gsub("_"," ") %>
+                      <% end %>
+                      <%if f.recorded_date> (Time.now - 7.days) %>
+                          <span class="badge">Nuevo!</span>
+                      <% end %>
+                      <br>  
 
-              </td>
-              <td class="text-center">
-                <%= link_to download_audio_path(f.id), :class=>"download",'data-no-turbolink'=> true, data: { song_id: f.id} do %>
-                    <i class="glyphicon glyphicon-cloud-download" style="color: #002a80;"></i>
-                <% end %>
-
-              </td>
-              <td>              
-
-              </td>
-              <td class="playing"><i class="fa fa-music text-primary"></i>
-                <%#= link_to "#{f.name}","/#{f.path+"/"+f.name}.mp3", :class=> "html5", :data => {:id => f.id} %>
-                <% if f.name.split(' ').count > 1 %>
-                    <%= f.name.split(' ')[1..-1].join(' ') %>
-                <% else %>
-                    <%= f.name %>
-                <% end %>
-                <%if f.recorded_date> (Time.now - 7.days) %>
-                    <span class="badge">Nuevo!</span>
-                <% end %>
-              </td>
-              <td>
-                <%= f.recorded_date.strftime("%d %B %Y") %>
-              </td>
-
-              <td id="<%= f.id %>">
-                <%= f.played %>
-              </td>
-
-              <td id="downloaded_<%= f.id %>">
-                <%= f.downloaded_times %>
-              </td>
-            </tr>
-        <% end %>
-        </tbody>
-      </table>
-    </div>
+                      <small> 
+                      <i class="fui-calendar" style="color:#48C9B0"></i>
+                      <%= f.recorded_date.strftime("%d %B %Y") %> 
+                    </small>
+                    <br>
+                    <small>
+                      <i class="glyphicon glyphicon-time"></i> <%= f.duration %>  
+                    </small>
+                  </td>
+                    <% if current_user.try(:admin) %>
+                    <td id="<%= f.id %>">
+                      <%= f.played %>
+                    </td>
+                    <td id="downloaded_<%= f.id %>">
+                      <%= f.downloaded_times %>
+                    </td>
+                    <%end%>
+                    <td class="text-center">
+                      <%= link_to "/#{f.path+"/"+f.name}.mp3", :class=> "html5", :data => {:id => f.id} do %>
+                          <span><i class="fui-play" style="color: #C0392B;"></i></span>
+                      <% end %>
+                      <%= link_to download_audio_path(f.id), :class=>"download",'data-no-turbolink'=> true, data: { song_id: f.id} do %>
+                          <i class="glyphicon glyphicon-cloud-download" style="color: #002a80;"></i>
+                      <% end %>
+                  </td>
+                  </tr>
+              <% end %>
+              </tbody>
+            </table>
+        </div>
   </div>
+
+<div class="col-md-6">
+<div class="table-wrapper">
+  <table class="table table-sm table-bordered table-hover  table-condensed">
+            <caption class="text-center ">Predicaciones</caption>
+            <thead>
+              <tr>
+              <th></th>                
+                <th>Titulo</th>                
+                <% if current_user.try(:admin) %>
+                  <th>Played</th>
+                  <th>Descargas</th>
+                <%end%>
+                <th></th>
+              </tr>
+              </thead>
+              <tbody>
+              <% @songs.where(:audio_type => "predica").order(:recorded_date => :desc).each do |f| %>
+                  <tr>
+                  <td>
+                    <img src="/assets/<%= f.attachment %>" width="50">                    
+                  </td>
+                  <td>                    
+                      <i class="glyphicon glyphicon-music text-primary" style="color:#48C9B0"></i>                  
+                      <% if f.name.gsub("_"," ").split(' ').count > 1 %>
+                          <%= f.name.gsub("_"," ").split(' ')[1..-1].join(' ') %>
+                      <% else %>
+                          <%= f.name.gsub("_"," ") %>
+                      <% end %>
+                      <%if f.recorded_date> (Time.now - 7.days) %>
+                          <span class="badge">Nuevo!</span>
+                      <% end %>
+                      <br>                      
+                      <small> 
+                      <i class="fui-calendar" style="color:#48C9B0"></i>
+                      <%= f.recorded_date.strftime("%d %B %Y") %> 
+                    </small>
+                    <br>
+                    <small>
+                      <i class="glyphicon glyphicon-time"></i> <%= f.duration %>  
+                    </small>
+                  </td>
+                    <% if current_user.try(:admin) %>
+                    <td id="<%= f.id %>">
+                      <%= f.played %>
+                    </td>
+                    <td id="downloaded_<%= f.id %>">
+                      <%= f.downloaded_times %>
+                    </td>
+                    <%end%>
+                    <td class="text-center">
+                      <%= link_to "/#{f.path+"/"+f.name}.mp3", :class=> "html5", :data => {:id => f.id} do %>
+                          <span><i class="fui-play" style="color: #C0392B;"></i></span>
+                      <% end %>
+                      <%= link_to download_audio_path(f.id), :class=>"download",'data-no-turbolink'=> true, data: { song_id: f.id} do %>
+                          <i class="glyphicon glyphicon-cloud-download" style="color: #002a80;"></i>
+                      <% end %>
+                  </td>
+                  </tr>
+              <% end %>
+              </tbody>
+          </table>
+      </div>
+</div>
+</div>
+
 </div>
 
 <script>
+$(function(){
+setTableSize();
+$(window).on("resize",setTableSize);  
+})
+function setTableSize(){
+  $(".table-wrapper").css("height", ($(window).height()/2)-80)
+}
 
   $("a.html5").each(function(){
     $(this).on("click",function(){
@@ -85,9 +230,9 @@
       }else{
         $(".html5 span i").removeClass("fui-pause");
         $(".html5 span i").removeClass("fui-play");
-        $(".html5 span i").addClass("fui-play").css("color","#002a80");
+        $(".html5 span i").addClass("fui-play").css("color","#C0392B");
         $(this).find("span i").removeClass("fui-play");
-        $(this).find("span i").addClass("fui-pause").css("color","#1abc9c");
+        $(this).find("span i").addClass("fui-pause").css("color","#48C9B0");
         var audioSection = $('#audio');
         var audio = $('<audio>', {
           controls : 'controls',
